@@ -5,17 +5,17 @@ import { Message } from '../types';
 interface MessageBubbleProps {
   message: Message;
   onChipClick?: (chip: string) => void;
+  isDark?: boolean;
+  isRtl?: boolean;
 }
 
 function formatContent(content: string) {
-  // Simple markdown-like formatting
   const lines = content.split('\n');
   const elements: JSX.Element[] = [];
 
   lines.forEach((line, i) => {
     let processedLine = line;
     
-    // Headers
     if (processedLine.startsWith('### ')) {
       elements.push(
         <h3 key={i} className="text-sm font-bold text-white mt-3 mb-1">
@@ -33,10 +33,8 @@ function formatContent(content: string) {
       return;
     }
 
-    // Bold
     processedLine = processedLine.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-semibold">$1</strong>');
     
-    // Blockquote
     if (processedLine.startsWith('> ')) {
       elements.push(
         <blockquote key={i} className="border-l-2 border-indigo-500/50 pl-3 my-2 text-gray-300 italic text-sm">
@@ -46,7 +44,6 @@ function formatContent(content: string) {
       return;
     }
 
-    // Bullet points
     if (processedLine.startsWith('• ') || processedLine.startsWith('- ')) {
       elements.push(
         <div key={i} className="flex items-start gap-2 my-0.5 text-sm">
@@ -57,7 +54,6 @@ function formatContent(content: string) {
       return;
     }
 
-    // Numbered list
     if (/^\d+\.\s/.test(processedLine)) {
       const match = processedLine.match(/^(\d+)\.\s(.*)/);
       if (match) {
@@ -71,9 +67,8 @@ function formatContent(content: string) {
       }
     }
 
-    // Table rows
     if (processedLine.startsWith('|') && processedLine.endsWith('|')) {
-      if (processedLine.includes('---')) return; // Skip separator
+      if (processedLine.includes('---')) return;
       const cells = processedLine.split('|').filter(c => c.trim());
       elements.push(
         <div key={i} className="flex gap-2 text-xs my-0.5 font-mono">
@@ -85,7 +80,6 @@ function formatContent(content: string) {
       return;
     }
 
-    // Planning progress indicator
     if (processedLine.includes('[📊')) {
       elements.push(
         <div key={i} className="flex items-center gap-2 my-2">
@@ -95,13 +89,11 @@ function formatContent(content: string) {
       return;
     }
 
-    // Empty line
     if (processedLine.trim() === '') {
       elements.push(<div key={i} className="h-2" />);
       return;
     }
 
-    // Regular text
     elements.push(
       <p key={i} className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: processedLine }} />
     );
@@ -110,7 +102,7 @@ function formatContent(content: string) {
   return elements;
 }
 
-export function MessageBubble({ message, onChipClick }: MessageBubbleProps) {
+export function MessageBubble({ message, onChipClick, isDark = true, isRtl = false }: MessageBubbleProps) {
   const isUser = message.role === 'user';
 
   return (
@@ -118,7 +110,7 @@ export function MessageBubble({ message, onChipClick }: MessageBubbleProps) {
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-      className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'} mb-4`}
+      className={`flex gap-3 ${isUser ? (isRtl ? 'flex-row' : 'flex-row-reverse') : (isRtl ? 'flex-row-reverse' : 'flex-row')} mb-4`}
     >
       {/* Avatar */}
       <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
@@ -131,11 +123,11 @@ export function MessageBubble({ message, onChipClick }: MessageBubbleProps) {
 
       {/* Message content */}
       <div className={`max-w-[80%] ${isUser ? 'items-end' : 'items-start'} flex flex-col`}>
-        <div className={`${isUser ? 'bubble-user' : 'bubble-ai'} px-4 py-3`}>
+        <div className={`${isUser ? 'bubble-user' : isDark ? 'bubble-ai' : 'bubble-ai-light'} px-4 py-3`}>
           {isUser ? (
-            <p className="text-sm text-gray-100 leading-relaxed">{message.content}</p>
+            <p className={`text-sm ${isDark ? 'text-gray-100' : 'text-gray-800'} leading-relaxed`}>{message.content}</p>
           ) : (
-            <div className={`${message.isStreaming ? 'streaming-cursor' : ''} text-gray-200`}>
+            <div className={`${message.isStreaming ? 'streaming-cursor' : ''} ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>
               {formatContent(message.content)}
             </div>
           )}
@@ -144,7 +136,7 @@ export function MessageBubble({ message, onChipClick }: MessageBubbleProps) {
         {/* Planning Progress Bar */}
         {message.planningProgress !== undefined && message.planningProgress < 100 && (
           <div className="mt-2 w-full">
-            <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div className={`h-1.5 ${isDark ? 'bg-gray-800' : 'bg-gray-200'} rounded-full overflow-hidden`}>
               <motion.div
                 className="h-full progress-shimmer rounded-full"
                 initial={{ width: 0 }}
@@ -167,7 +159,11 @@ export function MessageBubble({ message, onChipClick }: MessageBubbleProps) {
               <motion.button
                 key={i}
                 onClick={() => onChipClick?.(chip)}
-                className="chip-option px-3 py-1.5 rounded-full text-xs font-medium bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50"
+                className={`chip-option px-3 py-1.5 rounded-full text-xs font-medium ${
+                  isDark 
+                    ? 'bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20 hover:border-indigo-500/50'
+                    : 'bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100'
+                }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -178,7 +174,7 @@ export function MessageBubble({ message, onChipClick }: MessageBubbleProps) {
         )}
 
         {/* Timestamp */}
-        <span className="text-[10px] text-gray-600 mt-1 px-1">
+        <span className={`text-[10px] ${isDark ? 'text-gray-600' : 'text-gray-400'} mt-1 px-1`}>
           {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </span>
       </div>
