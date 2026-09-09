@@ -2,7 +2,7 @@ export type Lang = 'ar' | 'en';
 
 export const translations = {
   ar: {
-    appName: 'نوفامايند',
+    appName: 'شاهين',
     appSubtitle: 'ذكاء مزدوج المحرك',
     newConversation: 'محادثة جديدة',
     conversations: 'المحادثات',
@@ -43,7 +43,7 @@ export const translations = {
     }
   },
   en: {
-    appName: 'NovaMind',
+    appName: 'Shaheen AI',
     appSubtitle: 'Dual-Engine AI',
     newConversation: 'New Conversation',
     conversations: 'Conversations',

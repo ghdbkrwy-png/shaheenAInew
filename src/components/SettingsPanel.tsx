@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Globe, Moon, Sun, Shield, Cpu, Server } from 'lucide-react';
+import { X, Globe, Moon, Sun, Shield } from 'lucide-react';
 import { AppSettings } from '../hooks/useSettings';
 import { Lang, translations } from '../i18n';
 
@@ -113,30 +113,6 @@ export function SettingsPanel({ isOpen, onClose, settings, setLang, setTheme, is
                     {t.lightMode}
                   </button>
                 </div>
-              </div>
-
-              {/* Model Info */}
-              <div className={`p-4 rounded-xl ${isDark ? 'bg-white/[0.02] border border-white/5' : 'bg-gray-50 border border-gray-200'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Cpu size={14} className={isDark ? 'text-gray-400' : 'text-gray-600'} />
-                  <span className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{t.model}</span>
-                </div>
-                <p className={`text-xs font-mono ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{t.modelDesc}</p>
-              </div>
-
-              {/* API Status */}
-              <div className={`p-4 rounded-xl ${isDark ? 'bg-white/[0.02] border border-white/5' : 'bg-gray-50 border border-gray-200'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <Server size={14} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
-                  <span className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {settings.lang === 'ar' ? 'الخادم' : 'Server'}
-                  </span>
-                </div>
-                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                  {settings.lang === 'ar' 
-                    ? 'Vercel Edge Function — المفتاح محمي على الخادم'
-                    : 'Vercel Edge Function — Key secured on server'}
-                </p>
               </div>
 
               {/* Privacy */}
