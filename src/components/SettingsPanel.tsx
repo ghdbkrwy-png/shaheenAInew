@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Globe, Moon, Sun, Key, Shield, Cpu, Check } from 'lucide-react';
+import { X, Globe, Moon, Sun, Shield, Cpu, Server } from 'lucide-react';
 import { AppSettings } from '../hooks/useSettings';
 import { Lang, translations } from '../i18n';
 
@@ -10,21 +9,12 @@ interface SettingsPanelProps {
   settings: AppSettings;
   setLang: (lang: Lang) => void;
   setTheme: (theme: 'dark' | 'light') => void;
-  updateSettings: (partial: Partial<AppSettings>) => void;
   isDark: boolean;
 }
 
-export function SettingsPanel({ isOpen, onClose, settings, setLang, setTheme, updateSettings, isDark }: SettingsPanelProps) {
-  const [apiKeyInput, setApiKeyInput] = useState(settings.apiKey);
-  const [saved, setSaved] = useState(false);
+export function SettingsPanel({ isOpen, onClose, settings, setLang, setTheme, isDark }: SettingsPanelProps) {
   const t = translations[settings.lang];
   const isRtl = settings.lang === 'ar';
-
-  const handleSaveApiKey = () => {
-    updateSettings({ apiKey: apiKeyInput });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
 
   return (
     <AnimatePresence>
@@ -125,42 +115,6 @@ export function SettingsPanel({ isOpen, onClose, settings, setLang, setTheme, up
                 </div>
               </div>
 
-              {/* API Key */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <Key size={16} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
-                  <h3 className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>{t.apiKey}</h3>
-                </div>
-                <div className="space-y-2">
-                  <input
-                    type="password"
-                    value={apiKeyInput}
-                    onChange={(e) => setApiKeyInput(e.target.value)}
-                    placeholder={t.apiKeyPlaceholder}
-                    className={`w-full px-4 py-3 rounded-xl text-sm outline-none transition-all ${
-                      isDark 
-                        ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:border-indigo-500/50' 
-                        : 'bg-gray-100 border border-gray-200 text-gray-900 placeholder-gray-400 focus:border-indigo-400'
-                    }`}
-                  />
-                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    {t.apiKeyHelp}
-                  </p>
-                  <motion.button
-                    onClick={handleSaveApiKey}
-                    className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                      saved
-                        ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400'
-                        : 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-500/30'
-                    }`}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {saved ? <Check size={16} /> : null}
-                    {saved ? t.saved : t.save}
-                  </motion.button>
-                </div>
-              </div>
-
               {/* Model Info */}
               <div className={`p-4 rounded-xl ${isDark ? 'bg-white/[0.02] border border-white/5' : 'bg-gray-50 border border-gray-200'}`}>
                 <div className="flex items-center gap-2 mb-2">
@@ -168,6 +122,21 @@ export function SettingsPanel({ isOpen, onClose, settings, setLang, setTheme, up
                   <span className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{t.model}</span>
                 </div>
                 <p className={`text-xs font-mono ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{t.modelDesc}</p>
+              </div>
+
+              {/* API Status */}
+              <div className={`p-4 rounded-xl ${isDark ? 'bg-white/[0.02] border border-white/5' : 'bg-gray-50 border border-gray-200'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <Server size={14} className={isDark ? 'text-emerald-400' : 'text-emerald-600'} />
+                  <span className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {settings.lang === 'ar' ? 'الخادم' : 'Server'}
+                  </span>
+                </div>
+                <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  {settings.lang === 'ar' 
+                    ? 'Vercel Edge Function — المفتاح محمي على الخادم'
+                    : 'Vercel Edge Function — Key secured on server'}
+                </p>
               </div>
 
               {/* Privacy */}

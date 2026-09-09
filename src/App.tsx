@@ -76,8 +76,8 @@ function WelcomeScreen({ mode, lang }: { mode: 'instant' | 'planning'; lang: Lan
 }
 
 export default function App() {
-  const { settings, setLang, setTheme, updateSettings } = useSettings();
-  const { chats, activeChat, activeChatId, mode, isStreaming, setMode, setActiveChatId, sendMessage, createNewChat, deleteChat, clearAllChats } = useChat(settings.apiKey);
+  const { settings, setLang, setTheme } = useSettings();
+  const { chats, activeChat, activeChatId, mode, isStreaming, setMode, setActiveChatId, sendMessage, createNewChat, deleteChat, clearAllChats } = useChat();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -221,7 +221,6 @@ export default function App() {
         settings={settings}
         setLang={setLang}
         setTheme={setTheme}
-        updateSettings={updateSettings}
         isDark={isDark}
       />
 
